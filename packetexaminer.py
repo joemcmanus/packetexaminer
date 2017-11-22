@@ -174,7 +174,6 @@ def urlCount(pkts, limit, headerOne, headerTwo, title):
                 uri=(pkt[http.HTTPRequest].Path).decode("utf-8")
                 host=(pkt[http.HTTPRequest].Host).decode("utf-8")
                 urls.append(host+uri)
-                print(host+uri)
     simpleCount(urls, limit, headerOne, headerTwo, title)
 
 
