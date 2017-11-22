@@ -1,8 +1,8 @@
 # packetexaminer
 ----
-This is a somple harness to do PCAP analysis. This hopefully automates a lot of the function an analyst would do manually. 
+This is a simple harness to perform PCAP analysis. This hopefully automates some routine functions an analyst would do manually. 
 
-Coming in the next day or two is visualization using NetworkX
+Coming in the next day or two is visualization using NetworkX and google map integration. 
 
 #Features
 ----
@@ -10,7 +10,7 @@ It currently supports:
  - Counts of IPs
  - Bytes between IPS
  - DNS lookups
- - URLs
+ - URL mining
 
 
 #Usage
