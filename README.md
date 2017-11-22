@@ -41,7 +41,7 @@ It currently supports:
 ----
 Show to top 10 DNS queries in the PCAP
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --dns --limit 10 
+    [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --dns --limit 10 
      +--------+--------------+
      | Option |    Value     |
      +--------+--------------+
@@ -75,7 +75,7 @@ Show to top 10 DNS queries in the PCAP
 
 Show to the 10 SRC/DST Flows
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --flows --limit 10 
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --flows --limit 10 
      +--------+--------------+
      | Option |    Value     |
      +--------+--------------+
@@ -108,7 +108,7 @@ Show to the 10 SRC/DST Flows
 
 Show to top 10 SRC/DST by bytes
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --bytes --limit 10 
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --bytes --limit 10 
      +--------+--------------+
      | Option |    Value     |
      +--------+--------------+
@@ -140,7 +140,7 @@ Show to top 10 SRC/DST by bytes
 
 Show the top 10 URLs in the pcap. 
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --url --limit 10 
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --url --limit 10 
      +--------+--------------+
      | Option |    Value     |
      +--------+--------------+
