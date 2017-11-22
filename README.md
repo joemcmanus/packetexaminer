@@ -75,21 +75,21 @@ Show to top 10 DNS queries in the PCAP
 
 Create a network map from the PCAP file.
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --limit 50 --netmap 
-    +--------+--------------+
-    | Option |    Value     |
-    +--------+--------------+
-    |  File  | ../http.pcap |
-    | Limit  |      50      |
-    | Bytes  |    False     |
-    | Flows  |    False     |
-    |  Dst   |    False     |
-    |  Src   |    False     |
-    |  DNS   |    False     |
-    |  URLs  |    False     |
-    | Netmap |     True     |
-    +--------+--------------+
-    Reading pcap file
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --limit 50 --netmap 
+     +--------+--------------+
+     | Option |    Value     |
+     +--------+--------------+
+     |  File  | ../http.pcap |
+     | Limit  |      50      |
+     | Bytes  |    False     |
+     | Flows  |    False     |
+     |  Dst   |    False     |
+     |  Src   |    False     |
+     |  DNS   |    False     |
+     |  URLs  |    False     |
+     | Netmap |     True     |
+     +--------+--------------+
+     Reading pcap file
 
 ![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/netmap.jpg)
 
