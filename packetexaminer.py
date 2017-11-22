@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File    : packetexaminer.py
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.1  11/21/2017 Joe McManus
+# Version : 0.2  11/22/2017 Joe McManus
 # Copyright (C) 2017 Joe McManus
 
 # This program is free software: you can redistribute it and/or modify
@@ -46,6 +46,7 @@ parser.add_argument('--src', help="Display count of source IPs", action="store_t
 parser.add_argument('--bytes', help="Display source and destination byte counts", action="store_true")
 parser.add_argument('--dns', help="Display all DNS Lookups in PCAP", action="store_true")
 parser.add_argument('--url', help="Display all ULRs in PCAP", action="store_true")
+parser.add_argument('--netmap', help="Display a network Map", action="store_true")
 parser.add_argument('--all', help="Display all", action="store_true")
 parser.add_argument('--limit', help="Limit results to X", type=int)
 args=parser.parse_args()
@@ -58,6 +59,7 @@ if args.all:
     args.src=True
     args.dns=True
     args.url=True
+    args.netmap=True
 
 if args.url:
     try:
@@ -71,6 +73,17 @@ if args.url:
             sudo python3 ./setup.py build install. """)
         args.url=False
 
+if args.netmap:
+    try:
+        import matplotlib.pyplot as plt
+    except:
+        print("ERROR: Matplotlib not installed, try pip3 install matplotlib or dnf install python3-matplotlib")
+        quit()
+    try:
+        import networkx as nx
+    except:
+        print("ERROR: NetworkX not installed, try pip3 install networkx")
+        quit()
 
 table= PrettyTable(["Option", "Value"])
 table.add_row(["File", args.file])
@@ -81,6 +94,7 @@ table.add_row(["Dst", args.dst])
 table.add_row(["Src", args.src])
 table.add_row(["DNS", args.dns])
 table.add_row(["URLs", args.url])
+table.add_row(["Netmap", args.netmap])
 print(table)
 
 if os.path.isfile(args.file):
@@ -176,7 +190,30 @@ def urlCount(pkts, limit, headerOne, headerTwo, title):
                 urls.append(host+uri)
     simpleCount(urls, limit, headerOne, headerTwo, title)
 
+def netmap(srcdst, limit):
+    output=[]
+    #Create a unique list
+    srcdst = list(set(srcdst))
+    i=0
+    for pair in srcdst:
+        src,dst=pair.split(',')
+        output.append((src, dst))
+        if limit:
+            if i >= limit:
+                break
+        i+=1
 
+    g = nx.Graph()
+    edgeList = output
+    g.add_edges_from(edgeList)
+
+    pos = nx.spring_layout(g) 
+    
+    plt.title("PacketExaminer Network Map")
+
+    nx.draw(g,pos, with_labels=True, node_color='#A0CBE2', width=1,edge_cmap=plt.cm.Blues, label_pos=1)
+
+    plt.show()
 
 if args.src:
     simpleCount(srcIP, args.limit, "Source IP", "Count", "Source IP Occurence")
@@ -190,3 +227,6 @@ if args.dns:
     dnsCount(pkts, args.limit, "DNS Lookup", "Count", "Unique DNS Lookups")
 if args.url:
     urlCount(pkts, args.limit, "URL", "Count", "Unique URLs" )
+if args.netmap:
+    netmap(srcdst, args.limit)
+

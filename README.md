@@ -2,7 +2,7 @@
 ----
 This is a simple harness to perform PCAP analysis. This hopefully automates some routine functions an analyst would do manually. 
 
-Coming in the next day or two is visualization using NetworkX and google map integration. 
+Coming in the next day or two is google map integration. 
 
 #Features
 ----
@@ -11,6 +11,7 @@ It currently supports:
  - Bytes between IPS
  - DNS lookups
  - URL mining
+ - Network Maps
 
 
 #Usage
@@ -72,6 +73,25 @@ Show to top 10 DNS queries in the PCAP
      |  a125375509.cdn.optimizely.com.  |   2   |
      +----------------------------------+-------+
 
+Create a network map from the PCAP file.
+
+[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --limit 50 --netmap 
+    +--------+--------------+
+    | Option |    Value     |
+    +--------+--------------+
+    |  File  | ../http.pcap |
+    | Limit  |      50      |
+    | Bytes  |    False     |
+    | Flows  |    False     |
+    |  Dst   |    False     |
+    |  Src   |    False     |
+    |  DNS   |    False     |
+    |  URLs  |    False     |
+    | Netmap |     True     |
+    +--------+--------------+
+    Reading pcap file
+
+![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/netmap.jpg)
 
 Show to the 10 SRC/DST Flows
 
