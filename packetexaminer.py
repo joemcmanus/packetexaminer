@@ -281,7 +281,7 @@ def writePktFile(pkt, contentType, pktContent):
         wt='wb'
 
     pktFile="pxOutput/" + pktDate + extension
-    print("Creating file {} ".format(pktFile))
+    print("---Creating file {} ".format(pktFile))
     fh=open(pktFile, wt)
     fh.write(pktContent)
     fh.close()
