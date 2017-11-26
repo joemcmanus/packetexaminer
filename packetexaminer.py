@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File    : packetexaminer.py
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.2  11/22/2017 Joe McManus
+# Version : 0.3  11/26/2017 Joe McManus
 # Copyright (C) 2017 Joe McManus
 
 # This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,8 @@ import os
 #Hide scapy IPv6 message
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
+import base64
+from datetime import datetime
 
 try: 
     from scapy.all import *
@@ -47,6 +49,7 @@ parser.add_argument('--bytes', help="Display source and destination byte counts"
 parser.add_argument('--dns', help="Display all DNS Lookups in PCAP", action="store_true")
 parser.add_argument('--url', help="Display all ULRs in PCAP", action="store_true")
 parser.add_argument('--netmap', help="Display a network Map", action="store_true")
+parser.add_argument('--xfiles', help="Extract files from PCAP", action="store_true")
 parser.add_argument('--all', help="Display all", action="store_true")
 parser.add_argument('--limit', help="Limit results to X", type=int)
 args=parser.parse_args()
@@ -60,8 +63,9 @@ if args.all:
     args.dns=True
     args.url=True
     args.netmap=True
+    args.xfiles=True
 
-if args.url:
+if args.url or args.xfiles or args.all:
     try:
         from scapy_http import http
     except:
@@ -95,11 +99,15 @@ table.add_row(["Src", args.src])
 table.add_row(["DNS", args.dns])
 table.add_row(["URLs", args.url])
 table.add_row(["Netmap", args.netmap])
+table.add_row(["Xtract Files", args.xfiles])
 print(table)
 
 if os.path.isfile(args.file):
-    print("Reading pcap file")
-    pkts = rdpcap(args.file)
+    print("--Reading pcap file")
+    try:
+        pkts = rdpcap(args.file)
+    except:
+        print("ERROR: Unable to open the pcap file {}, check  permissions".format(args.file))
 else: 
     print("ERROR: Can't open pcap file {}".format(args.file))
     quit()
@@ -215,6 +223,69 @@ def netmap(srcdst, limit):
 
     plt.show()
 
+def extractFiles(pkts):
+    #Create the output directory
+    print("--Creating output in ./pxOutput")
+    if not os.path.exists('pxOutput'):
+        os.mkdir('pxOutput')
+    else:
+        print('---Dir exists, skipping creation of pxOutput')
+
+    for pkt in pkts:
+        if pkt.haslayer(TCP) and (pkt.dport == 80 or pkt.sport == 80 ):
+            if http.HTTPResponse in pkt:
+                #Ridiculous workaround for object attribute with hyphen
+                contentType=getattr(pkt[http.HTTPResponse], 'Content-Type', None)
+                if contentType != None:
+                    contentType=contentType.decode("utf-8")
+                    if "text" in contentType or "javascript" in contentType:
+                        try:
+                            pktContent=((pkt[http.HTTPResponse].load).decode("utf-8"))   
+                            writePktFile(pkt, contentType, pktContent)
+                        except:
+                            pass
+                        try:    
+                            pktContent=(str(base64.b64decode(pkt[http.HTTPResponse].load).decode("utf-8")))
+                            writePktFile(pkt, contentType, pktContent)
+                        except:
+                            pass
+                    if "image" in contentType:
+                        try:
+                            pktContent=(pkt[http.HTTPResponse].load)
+                            writePktFile(pkt, contentType, pktContent)
+                        except:
+                            pass
+
+def writePktFile(pkt, contentType, pktContent):
+    try:
+        pktDate=(pkt[http.HTTPResponse].Date).decode("utf-8")
+        pktDate=datetime.strptime(pktDate, '%a, %d %b %Y %H:%M:%S %Z')
+        pktDate=pktDate.strftime('%Y-%m-%d::%H:%M:%S')
+    except:
+        pktDate='1970-01-01::01:01:01'
+
+    if 'javascript' in contentType:
+        extension='.js'
+        wt='w'
+    elif 'html' in contentType:
+        extension='.html'
+        wt='w'
+    elif 'jpeg' in contentType:
+        extension = '.jpg'
+        wt='wb'
+    elif 'png' in contentType:
+        extension = '.png'
+        wt='wb'
+    elif 'gif' in contentType:
+        extension = '.gif'
+        wt='wb'
+
+    pktFile="pxOutput/" + pktDate + extension
+    print("Creating file {} ".format(pktFile))
+    fh=open(pktFile, wt)
+    fh.write(pktContent)
+    fh.close()
+
 if args.src:
     simpleCount(srcIP, args.limit, "Source IP", "Count", "Source IP Occurence")
 if args.dst:
@@ -229,4 +300,6 @@ if args.url:
     urlCount(pkts, args.limit, "URL", "Count", "Unique URLs" )
 if args.netmap:
     netmap(srcdst, args.limit)
+if args.xfiles:
+    extractFiles(pkts)
 
