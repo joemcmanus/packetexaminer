@@ -17,7 +17,7 @@ It currently supports:
 #Usage
 ----
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http2.pcap  --help 
+    [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http2.pcap  --help 
     usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--bytes] [--dns]
                              [--url] [--netmap] [--xfiles] [--all] [--limit LIMIT]
                              file
