@@ -16,26 +16,30 @@ It currently supports:
 
 #Usage
 ----
-    [joe@fedora26 packetexaminer]$ ./packetexaminer.py --help 
-     usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--bytes] [--dns]
-                              [--url] [--all] [--limit LIMIT]
-                              file
-     
-     PCAP File Examiner
-     
-     positional arguments:
-       file           Source PCAP File, i.e. example.pcap
-     
-     optional arguments:
-       -h, --help     show this help message and exit
-       --flows        Display flow summary
-       --dst          Display count of destination IPs
-       --src          Display count of source IPs
-       --bytes        Display source and destination byte counts
-       --dns          Display all DNS Lookups in PCAP
-       --url          Display all ULRs in PCAP
-       --all          Display all
-       --limit LIMIT  Limit results to X
+
+[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http2.pcap  --help 
+    usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--bytes] [--dns]
+                             [--url] [--netmap] [--xfiles] [--all] [--limit LIMIT]
+                             file
+    
+    PCAP File Examiner
+    
+    positional arguments:
+      file           Source PCAP File, i.e. example.pcap
+    
+    optional arguments:
+      -h, --help     show this help message and exit
+      --flows        Display flow summary
+      --dst          Display count of destination IPs
+      --src          Display count of source IPs
+      --bytes        Display source and destination byte counts
+      --dns          Display all DNS Lookups in PCAP
+      --url          Display all ULRs in PCAP
+      --netmap       Display a network Map
+      --xfiles       Extract files from PCAP
+      --all          Display all
+      --limit LIMIT  Limit results to X
+
 
 
 #Examples
