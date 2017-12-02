@@ -198,3 +198,39 @@ Show the top 10 URLs in the pcap.
      | cdn.cnn.com/cnn/.e1mo/img/4.0/logos/menu_entertainment.png |   3   |
      +------------------------------------------------------------+-------+
 
+
+Show the top 10 hosts in the PCAP by bytes and reolve the IP.
+
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py --bytes --resolve --limit 10 ../http.pcap | sed s'/^/     /'
+     +--------------+--------------+
+     |    Option    |    Value     |
+     +--------------+--------------+
+     |     File     | ../http.pcap |
+     |    Limit     |      10      |
+     |    Bytes     |     True     |
+     |    Flows     |    False     |
+     |     Dst      |    False     |
+     |     Src      |    False     |
+     |     DNS      |    False     |
+     |     URLs     |    False     |
+     |    Netmap    |    False     |
+     | Xtract Files |    False     |
+     | Resolve IPs  |     True     |
+     +--------------+--------------+
+     --Reading pcap file
+     +------------------------------------------------------+------------------------------------------------------+--------+
+     |                         Src                          |                         Dst                          | Bytes  |
+     +------------------------------------------------------+------------------------------------------------------+--------+
+     |                    151.101.65.67                     |                    192.168.1.107                     | 900959 |
+     |      server-54-230-5-161.dfw3.r.cloudfront.net       |                    192.168.1.107                     | 852131 |
+     | a23-217-102-176.deploy.static.akamaitechnologies.com |                    192.168.1.107                     | 851062 |
+     |               den02s01-in-f4.1e100.net               |                    192.168.1.107                     | 316173 |
+     | a23-217-104-212.deploy.static.akamaitechnologies.com |                    192.168.1.107                     | 225254 |
+     |      server-54-230-7-190.dfw3.r.cloudfront.net       |                    192.168.1.107                     | 183203 |
+     |                     slashdot.org                     |                    192.168.1.107                     | 166102 |
+     | a23-217-102-181.deploy.static.akamaitechnologies.com |                    192.168.1.107                     | 152499 |
+     |                    192.168.1.107                     | a23-217-102-176.deploy.static.akamaitechnologies.com | 141654 |
+     |                    151.101.64.175                    |                    192.168.1.107                     | 124329 |
+     | a23-217-103-184.deploy.static.akamaitechnologies.com |                    192.168.1.107                     | 115715 |
+     +------------------------------------------------------+------------------------------------------------------+--------+
+
