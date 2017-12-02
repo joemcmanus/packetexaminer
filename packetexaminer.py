@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File    : packetexaminer.py
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.3  11/26/2017 Joe McManus
+# Version : 0.2  12/02/2017 Joe McManus
 # Copyright (C) 2017 Joe McManus
 
 # This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import base64
 from datetime import datetime
+import socket
 
 try: 
     from scapy.all import *
@@ -50,6 +51,7 @@ parser.add_argument('--dns', help="Display all DNS Lookups in PCAP", action="sto
 parser.add_argument('--url', help="Display all ULRs in PCAP", action="store_true")
 parser.add_argument('--netmap', help="Display a network Map", action="store_true")
 parser.add_argument('--xfiles', help="Extract files from PCAP", action="store_true")
+parser.add_argument('--resolve', help="Resolve IPs", action="store_true")
 parser.add_argument('--all', help="Display all", action="store_true")
 parser.add_argument('--limit', help="Limit results to X", type=int)
 args=parser.parse_args()
@@ -100,6 +102,7 @@ table.add_row(["DNS", args.dns])
 table.add_row(["URLs", args.url])
 table.add_row(["Netmap", args.netmap])
 table.add_row(["Xtract Files", args.xfiles])
+table.add_row(["Resolve IPs", args.resolve])
 print(table)
 
 if os.path.isfile(args.file):
@@ -123,6 +126,14 @@ for pkt in pkts:
         dstIP.append(pkt[IP].dst)
         srcdst.append(pkt[IP].src + ","  + pkt[IP].dst)
 
+def resolveName(addr):
+    try:
+        addrList=socket.gethostbyaddr(addr)
+        addr=addrList[0]
+    except:
+        pass
+    return addr
+
 def simpleCount(ipList, limit, headerOne, headerTwo, title):
     table= PrettyTable([headerOne, headerTwo])
     cnt = Counter()
@@ -130,7 +141,10 @@ def simpleCount(ipList, limit, headerOne, headerTwo, title):
         cnt[ip] += 1
     i=0
     for item, count in cnt.most_common(): 
-        table.add_row([item,count])
+        if args.resolve:
+            table.add_row([resolveName(item),count])
+        else:
+            table.add_row([item,count])
         if limit:
             if i >= limit:
                 break
@@ -146,7 +160,10 @@ def flowCount(ipList, limit):
     i=0
     for item, count in cnt.most_common(): 
         src,dst=item.split(',')
-        table.add_row([src, dst, count])
+        if args.resolve:
+            table.add_row([resolveName(src),resolveName(dst), count])
+        else:
+            table.add_row([src, dst, count])
         if limit:
             if i >= limit:
                 break
@@ -169,7 +186,10 @@ def byteCount(pkts, srcdst, limit):
     i=0
     for srcdst, bytes in sorted(srcdstbytes.items(), key=operator.itemgetter(1), reverse=True):
         src,dst=srcdst.split(',')
-        table.add_row([src, dst, bytes])
+        if args.resolve:
+            table.add_row([resolveName(src),resolveName(dst), bytes])
+        else:
+            table.add_row([src, dst, bytes])
         if limit:
             if i >= limit:
                 break
@@ -205,7 +225,10 @@ def netmap(srcdst, limit):
     i=0
     for pair in srcdst:
         src,dst=pair.split(',')
-        output.append((src, dst))
+        if args.resolve:
+            output.append((resolveName(src), resolveName(dst)))
+        else:
+            output.append((src, dst))
         if limit:
             if i >= limit:
                 break
