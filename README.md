@@ -83,8 +83,7 @@ Show the top 10 DNS queries in the PCAP
 
 Show the top 10 DNS queries with the clients that looked them up:
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../example2.pcap --dns --limit 10 --details 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --dns  --details --limit 10 --skipopts |  sed 's/^/     /'
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --dns  --details --limit 10 --skipopts 
      --Reading pcap file
      Unique DNS Lookups
      +--------------------------------------------------------------+-------+----------------------------------------------------+
