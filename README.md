@@ -80,6 +80,44 @@ Show to top 10 DNS queries in the PCAP
      |  a125375509.cdn.optimizely.com.  |   2   |
      +----------------------------------+-------+
 
+Show the top 10 DNS queries with the clients that looked them up:
+
+[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../example2.pcap --dns --limit 10 --details | sed 's/^/     /'
+     +--------------+------------------+
+     |    Option    |      Value       |
+     +--------------+------------------+
+     |     File     | ../example2.pcap |
+     |    Limit     |        10        |
+     |    Bytes     |      False       |
+     |    Flows     |      False       |
+     |     Dst      |      False       |
+     |     Src      |      False       |
+     |     DNS      |       True       |
+     |     URLs     |      False       |
+     |    Netmap    |      False       |
+     | Xtract Files |      False       |
+     | Resolve IPs  |      False       |
+     |   Details    |       True       |
+     +--------------+------------------+
+     --Reading pcap file
+     Unique DNS Lookups
+     +------------------------------------+-------+------------------------------------+
+     |             DNS Lookup             | Count |               Client               |
+     +------------------------------------+-------+------------------------------------+
+     |            ibiblio.org.            |   8   |          ['192.168.1.28']          |
+     |           hallmark.com.            |   2   | ['192.168.1.107', '192.168.1.105'] |
+     |          www.google.com.           |   2   | ['192.168.1.105', '192.168.1.107'] |
+     |       connect.facebook.net.        |   2   | ['192.168.1.105', '192.168.1.107'] |
+     |         www.facebook.com.          |   2   | ['192.168.1.105', '192.168.1.107'] |
+     |            froogle.com.            |   1   |         ['192.168.1.107']          |
+     |        clients6.google.com.        |   1   |         ['192.168.1.107']          |
+     |        www.googleapis.com.         |   1   |         ['192.168.1.105']          |
+     | www-google-analytics.l.google.com. |   1   |         ['192.168.1.105']          |
+     |        checkout.stripe.com.        |   1   |         ['192.168.1.105']          |
+     |           js.stripe.com.           |   1   |         ['192.168.1.105']          |
+     +------------------------------------+-------+------------------------------------+
+
+
 Create a network map from the PCAP file.
 
      [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --limit 50 --netmap 
@@ -199,9 +237,11 @@ Show the top 10 URLs in the pcap.
      +------------------------------------------------------------+-------+
 
 
+
+
 Show the top 10 hosts in the PCAP by bytes and reolve the IP.
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py --bytes --resolve --limit 10 ../http.pcap | sed s'/^/     /'
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py --bytes --resolve --limit 10 ../http.pcap 
      +--------------+--------------+
      |    Option    |    Value     |
      +--------------+--------------+

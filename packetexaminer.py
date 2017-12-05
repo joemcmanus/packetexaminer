@@ -52,6 +52,7 @@ parser.add_argument('--url', help="Display all ULRs in PCAP", action="store_true
 parser.add_argument('--netmap', help="Display a network Map", action="store_true")
 parser.add_argument('--xfiles', help="Extract files from PCAP", action="store_true")
 parser.add_argument('--resolve', help="Resolve IPs", action="store_true")
+parser.add_argument('--details', help="Display aditional details where available", action="store_true")
 parser.add_argument('--all', help="Display all", action="store_true")
 parser.add_argument('--limit', help="Limit results to X", type=int)
 args=parser.parse_args()
@@ -66,6 +67,7 @@ if args.all:
     args.url=True
     args.netmap=True
     args.xfiles=True
+    args.details=True
 
 if args.url or args.xfiles or args.all:
     try:
@@ -104,6 +106,7 @@ table.add_row(["URLs", args.url])
 table.add_row(["Netmap", args.netmap])
 table.add_row(["Xtract Files", args.xfiles])
 table.add_row(["Resolve IPs", args.resolve])
+table.add_row(["Details", args.details])
 print(table)
 
 if os.path.isfile(args.file):
@@ -153,6 +156,24 @@ def simpleCount(ipList, limit, headerOne, headerTwo, title):
     print(title)
     print(table)	
 
+def simpleCountDetails(itemList, itemDict, limit, headerOne, headerTwo, headerThree, title):
+    table=PrettyTable([headerOne, headerTwo, headerThree])
+    cnt = Counter()
+    for item in itemList:
+        cnt[item] += 1
+    i=0
+    for item, count in cnt.most_common():
+        if args.resolve:
+            table.add_row([resolveName(item),count,itemDict[item]])
+        else:
+            table.add_row([item,count,itemDict[item]])
+        if limit:
+            if i >= limit:
+                break
+        i+=1
+    print(title)
+    print(table)
+
 def flowCount(ipList, limit):
     table= PrettyTable(["Src", "Dst", "Count"])
     cnt = Counter()
@@ -200,14 +221,30 @@ def byteCount(pkts, srcdst, limit):
 
 def dnsCount(pkts, limit, headerOne, headerTwo, title):
     lookups=[]
+    queryClients={}
     for pkt in pkts:
         if IP in pkt:
             if pkt.haslayer(DNS) and pkt.getlayer(DNS).qr == 0:
                 lookup=(pkt.getlayer(DNS).qd.qname).decode("utf-8")
+                if args.details:
+                    #Check to see if query is in the dict already
+                    if lookup in queryClients:
+                        #Check to see if the client IP is in the value
+                        if pkt[IP].src not in queryClients[lookup]:
+                            queryClients[lookup].append(pkt[IP].src)
+                    else:
+                        #initialize the key with a value of a list
+                        queryClients[lookup] = [pkt[IP].src]
+
                 if "arpa" not in lookup:
                     lookups.append(lookup)
      
-    simpleCount(lookups, limit, headerOne, headerTwo, title)
+    if args.details:
+        simpleCountDetails(lookups, queryClients, limit, headerOne, headerTwo, 'Clients', title)
+    else:
+        simpleCount(lookups, limit, headerOne, headerTwo, title)
+
+
 
 def urlCount(pkts, limit, headerOne, headerTwo, title):
     urls=[]
