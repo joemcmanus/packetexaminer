@@ -82,7 +82,7 @@ Show to top 10 DNS queries in the PCAP
 
 Show the top 10 DNS queries with the clients that looked them up:
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../example2.pcap --dns --limit 10 --details | sed 's/^/     /'
+[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../example2.pcap --dns --limit 10 --details 
      +--------------+------------------+
      |    Option    |      Value       |
      +--------------+------------------+
@@ -236,6 +236,38 @@ Show the top 10 URLs in the pcap.
      | cdn.cnn.com/cnn/.e1mo/img/4.0/logos/menu_entertainment.png |   3   |
      +------------------------------------------------------------+-------+
 
+
+Show the top 5 URLs and the clients who accessed them. 
+
+[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --url  --details --limit 5 | sed 's/^/     /'
+     +--------------+------------------+
+     |    Option    |      Value       |
+     +--------------+------------------+
+     |     File     | ../multiurl.pcap |
+     |    Limit     |        5         |
+     |    Bytes     |      False       |
+     |    Flows     |      False       |
+     |     Dst      |      False       |
+     |     Src      |      False       |
+     |     DNS      |      False       |
+     |     URLs     |       True       |
+     |    Netmap    |      False       |
+     | Xtract Files |      False       |
+     | Resolve IPs  |      False       |
+     |   Details    |       True       |
+     +--------------+------------------+
+     --Reading pcap file
+     Unique URLs
+     +----------------------------------------------------------------------------------------------------+-------+----------------------------------------------------+
+     |                                                URL                                                 | Count |                      Clients                       |
+     +----------------------------------------------------------------------------------------------------+-------+----------------------------------------------------+
+     |                                 cdn.optimizely.com/js/131788053.js                                 |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     | mab.chartbeat.com/mab_strategy/headline_testing/get_strategy/?host=cnn.com&domain=cnn.com&path=%2F |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |          data.cnn.com/jsonp/breaking_news/domestic.json?callback=CNNBreakingNewsCallback           |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |             beacon.krxd.net/optout_check?callback=Krux.ns._default.kxjsonp_optOutCheck             |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                    s.amazon-adsystem.com/iu3?cm3ppd=1&d=dtb-pub&csif=t&dl=ox_an                    |   3   |         ['192.168.1.105', '192.168.1.19']          |
+     |                                c.amazon-adsystem.com/aax2/apstag.js                                |   2   |         ['192.168.1.105', '192.168.1.19']          |
+     +----------------------------------------------------------------------------------------------------+-------+----------------------------------------------------+
 
 
 

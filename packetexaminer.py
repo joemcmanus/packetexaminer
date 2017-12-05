@@ -248,6 +248,7 @@ def dnsCount(pkts, limit, headerOne, headerTwo, title):
 
 def urlCount(pkts, limit, headerOne, headerTwo, title):
     urls=[]
+    urlClients={}
     for pkt in pkts:
         if IP in pkt:
             if http.HTTPRequest in pkt:
@@ -259,8 +260,19 @@ def urlCount(pkts, limit, headerOne, headerTwo, title):
                         host=resolveName(host) 
                     except:
                         pass
-                urls.append(host+uri)
-    simpleCount(urls, limit, headerOne, headerTwo, title)
+                url=host+uri
+                urls.append(url)
+                if args.details:
+                    if url in urlClients:
+                        if pkt[IP].src not in urlClients[url]:
+                            urlClients[url].append(pkt[IP].src)
+                    else:
+                        urlClients[url]=[pkt[IP].src]
+    if args.details:
+        simpleCountDetails(urls, urlClients, limit, headerOne, headerTwo, 'Clients', title)
+    else:
+        simpleCount(urls, limit, headerOne, headerTwo, title)
+
 
 def netmap(srcdst, limit):
     output=[]
