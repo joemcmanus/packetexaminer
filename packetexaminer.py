@@ -55,6 +55,7 @@ parser.add_argument('--resolve', help="Resolve IPs", action="store_true")
 parser.add_argument('--details', help="Display aditional details where available", action="store_true")
 parser.add_argument('--all', help="Display all", action="store_true")
 parser.add_argument('--limit', help="Limit results to X", type=int)
+parser.add_argument('--skipopts', help="Don't display the options at runtime", action="store_true")
 args=parser.parse_args()
 
 if args.all:
@@ -94,20 +95,21 @@ if args.netmap:
         print("ERROR: NetworkX not installed, try pip3 install networkx")
         quit()
 
-table= PrettyTable(["Option", "Value"])
-table.add_row(["File", args.file])
-table.add_row(["Limit", args.limit])
-table.add_row(["Bytes", args.bytes])
-table.add_row(["Flows", args.flows])
-table.add_row(["Dst", args.dst])
-table.add_row(["Src", args.src])
-table.add_row(["DNS", args.dns])
-table.add_row(["URLs", args.url])
-table.add_row(["Netmap", args.netmap])
-table.add_row(["Xtract Files", args.xfiles])
-table.add_row(["Resolve IPs", args.resolve])
-table.add_row(["Details", args.details])
-print(table)
+if not args.skipopts:
+    table= PrettyTable(["Option", "Value"])
+    table.add_row(["File", args.file])
+    table.add_row(["Limit", args.limit])
+    table.add_row(["Bytes", args.bytes])
+    table.add_row(["Flows", args.flows])
+    table.add_row(["Dst", args.dst])
+    table.add_row(["Src", args.src])
+    table.add_row(["DNS", args.dns])
+    table.add_row(["URLs", args.url])
+    table.add_row(["Netmap", args.netmap])
+    table.add_row(["Xtract Files", args.xfiles])
+    table.add_row(["Resolve IPs", args.resolve])
+    table.add_row(["Details", args.details])
+    print(table)
 
 if os.path.isfile(args.file):
     print("--Reading pcap file")
@@ -164,15 +166,27 @@ def simpleCountDetails(itemList, itemDict, limit, headerOne, headerTwo, headerTh
     i=0
     for item, count in cnt.most_common():
         if args.resolve:
-            table.add_row([resolveName(item),count,itemDict[item]])
+            table.add_row([formatCell(resolveName(item)),count,itemDict[item]])
         else:
-            table.add_row([item,count,itemDict[item]])
+            table.add_row([formatCell(item),count,itemDict[item]])
         if limit:
             if i >= limit:
                 break
         i+=1
     print(title)
     print(table)
+
+def formatCell(x):
+    chunks=""
+    if len(x) > 60:
+        for chunk in [x[i:i+60] for i in range(0, len(x), 60)]:
+            if len(chunk) == 60:
+                chunks += chunk + "\n"
+            else:
+                chunks += chunk
+        return chunks
+    else:
+        return x
 
 def flowCount(ipList, limit):
     table= PrettyTable(["Src", "Dst", "Count"])

@@ -48,7 +48,7 @@ It currently supports:
 
 #Examples
 ----
-Show to top 10 DNS queries in the PCAP
+Show the top 10 DNS queries in the PCAP
 
     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --dns --limit 10 
      +--------+--------------+
@@ -84,39 +84,25 @@ Show to top 10 DNS queries in the PCAP
 Show the top 10 DNS queries with the clients that looked them up:
 
      [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../example2.pcap --dns --limit 10 --details 
-     +--------------+------------------+
-     |    Option    |      Value       |
-     +--------------+------------------+
-     |     File     | ../example2.pcap |
-     |    Limit     |        10        |
-     |    Bytes     |      False       |
-     |    Flows     |      False       |
-     |     Dst      |      False       |
-     |     Src      |      False       |
-     |     DNS      |       True       |
-     |     URLs     |      False       |
-     |    Netmap    |      False       |
-     | Xtract Files |      False       |
-     | Resolve IPs  |      False       |
-     |   Details    |       True       |
-     +--------------+------------------+
+[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --dns  --details --limit 10 --skipopts |  sed 's/^/     /'
      --Reading pcap file
      Unique DNS Lookups
-     +------------------------------------+-------+------------------------------------+
-     |             DNS Lookup             | Count |               Client               |
-     +------------------------------------+-------+------------------------------------+
-     |            ibiblio.org.            |   8   |          ['192.168.1.28']          |
-     |           hallmark.com.            |   2   | ['192.168.1.107', '192.168.1.105'] |
-     |          www.google.com.           |   2   | ['192.168.1.105', '192.168.1.107'] |
-     |       connect.facebook.net.        |   2   | ['192.168.1.105', '192.168.1.107'] |
-     |         www.facebook.com.          |   2   | ['192.168.1.105', '192.168.1.107'] |
-     |            froogle.com.            |   1   |         ['192.168.1.107']          |
-     |        clients6.google.com.        |   1   |         ['192.168.1.107']          |
-     |        www.googleapis.com.         |   1   |         ['192.168.1.105']          |
-     | www-google-analytics.l.google.com. |   1   |         ['192.168.1.105']          |
-     |        checkout.stripe.com.        |   1   |         ['192.168.1.105']          |
-     |           js.stripe.com.           |   1   |         ['192.168.1.105']          |
-     +------------------------------------+-------+------------------------------------+
+     +--------------------------------------------------------------+-------+----------------------------------------------------+
+     |                          DNS Lookup                          | Count |                      Clients                       |
+     +--------------------------------------------------------------+-------+----------------------------------------------------+
+     |                     cdn.optimizely.com.                      |   4   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                    www.summerhamster.com.                    |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                    social-login.cnn.com.                     |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                       w.usabilla.com.                        |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                a125375509.cdn.optimizely.com.                |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                 secure-us.imrworldwide.com.                  |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                         mms.cnn.com.                         |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                    global-ssl.fastly.net.                    |   3   |         ['192.168.1.105', '192.168.1.19']          |
+     | ttd-uswest-match-adsrvr-org-454816348.us-west-1.elb.amazonaw |   3   |         ['192.168.1.105', '192.168.1.19']          |
+     |                            s.com.                            |       |                                                    |
+     |                   aax.amazon-adsystem.com.                   |   2   |         ['192.168.1.107', '192.168.1.19']          |
+     |                        data.cnn.com.                         |   2   |         ['192.168.1.107', '192.168.1.19']          |
+     +--------------------------------------------------------------+-------+----------------------------------------------------+
 
 
 Create a network map from the PCAP file.
@@ -240,7 +226,7 @@ Show the top 10 URLs in the pcap.
 
 Show the top 5 URLs and the clients who accessed them. 
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --url  --details --limit 5 
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --url  --details --limit 5 
      +--------------+------------------+
      |    Option    |      Value       |
      +--------------+------------------+
@@ -259,17 +245,38 @@ Show the top 5 URLs and the clients who accessed them.
      +--------------+------------------+
      --Reading pcap file
      Unique URLs
-     +----------------------------------------------------------------------------------------------------+-------+----------------------------------------------------+
-     |                                                URL                                                 | Count |                      Clients                       |
-     +----------------------------------------------------------------------------------------------------+-------+----------------------------------------------------+
-     |                                 cdn.optimizely.com/js/131788053.js                                 |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
-     | mab.chartbeat.com/mab_strategy/headline_testing/get_strategy/?host=cnn.com&domain=cnn.com&path=%2F |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
-     |          data.cnn.com/jsonp/breaking_news/domestic.json?callback=CNNBreakingNewsCallback           |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
-     |             beacon.krxd.net/optout_check?callback=Krux.ns._default.kxjsonp_optOutCheck             |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
-     |                    s.amazon-adsystem.com/iu3?cm3ppd=1&d=dtb-pub&csif=t&dl=ox_an                    |   3   |         ['192.168.1.105', '192.168.1.19']          |
-     |                                c.amazon-adsystem.com/aax2/apstag.js                                |   2   |         ['192.168.1.105', '192.168.1.19']          |
-     +----------------------------------------------------------------------------------------------------+-------+----------------------------------------------------+
-
+     +--------------------------------------------------------------+-------+----------------------------------------------------+
+     |                             URL                              | Count |                      Clients                       |
+     +--------------------------------------------------------------+-------+----------------------------------------------------+
+     |              cdn.optimizely.com/js/131788053.js              |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     | mab.chartbeat.com/mab_strategy/headline_testing/get_strategy |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |            /?host=cnn.com&domain=cnn.com&path=%2F            |       |                                                    |
+     | data.cnn.com/jsonp/breaking_news/domestic.json?callback=CNNB |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                     reakingNewsCallback                      |       |                                                    |
+     | beacon.krxd.net/optout_check?callback=Krux.ns._default.kxjso |   3   | ['192.168.1.107', '192.168.1.105', '192.168.1.19'] |
+     |                        np_optOutCheck                        |       |                                                    |
+     | s.amazon-adsystem.com/iu3?cm3ppd=1&d=dtb-pub&csif=t&dl=ox_an |   3   |         ['192.168.1.105', '192.168.1.19']          |
+     |             c.amazon-adsystem.com/aax2/apstag.js             |   2   |         ['192.168.1.105', '192.168.1.19']          |
+     | native.sharethrough.com/assets/sfp-creative-hub-listener.js  |   2   |         ['192.168.1.105', '192.168.1.19']          |
+     |             w.usabilla.com/0649ef72a7be.js?lv=1              |   2   |         ['192.168.1.105', '192.168.1.19']          |
+     | us-u.openx.net/w/1.0/cm?id=e818ca1e-0c23-caa8-0dd3-096b0ada0 |   2   |                 ['192.168.1.105']                  |
+     | 8b7&ph=2d1251ae-7f3a-47cf-bd2a-2f288854a0ba&plm=5&r=http%3A% |       |                                                    |
+     |  2F%2Fs.amazon-adsystem.com%2Fecm3%3Fex%3Dopenx.com%26id%3D  |       |                                                    |
+     | fastlane.rubiconproject.com/a/api/fastlane.json?account_id=1 |   2   |                 ['192.168.1.105']                  |
+     | 1078&size_id=15&p_pos=btf&rp_floor=0.01&rf=http%3A%2F%2Fwww. |       |                                                    |
+     | cnn.com%2Fvideos%2Fpolitics%2F2017%2F12%2F04%2Fspeier-reacti |       |                                                    |
+     | on-manafort-bail-deal-sot-tsr.cnn&p_screen_res=768x1024&tg_f |       |                                                    |
+     | l.eid=ad_rect_btf_01&tid=d4587982-0a3f-482a-9c60-4e7905ab7cb |       |                                                    |
+     | 7&tg_fl.uname=%2F8664377%2FCNN%2Fpolitics%2Fvideo&tg_fl.pr_a |       |                                                    |
+     | cctid=11078&kw=CNN%2Fpolitics%2Fvideo%2Crp.fastlane&tk_flint |       |                                                    |
+     | =plain&tg_i.site=CNN&tg_i.section=politics&tg_i.subsection=v |       |                                                    |
+     | ideo&tg_i.cap_topics=350%2C7WN%2C3QV%2CH2%2CC45Z%2CBPP%2CDHX |       |                                                    |
+     | %2CJBH%2C13YM%2C7JY%2C5G0%2CF68%2C5FT%2C6GK%2C7XK%2C5B3%2C6G |       |                                                    |
+     | L%2CDG2%2CDF7%2C7WP%2C6HF&tg_i.ssl=0&tg_i.pos=rect_btf_01&ra |       |                                                    |
+     |                    nd=0.6629693918205324                     |       |                                                    |
+     | googleads.g.doubleclick.net/pagead/viewthroughconversion/986 |   2   |         ['192.168.1.105', '192.168.1.19']          |
+     |               255830/?value=0&guid=ON&script=0               |       |                                                    |
+     +--------------------------------------------------------------+-------+----------------------------------------------------+
 
 
 Show the top 10 hosts in the PCAP by bytes and reolve the IP.
