@@ -70,6 +70,7 @@ if args.all:
 if args.url or args.xfiles or args.all:
     try:
         from scapy_http import http
+        import ipaddress
     except:
         print("""ERROR: Scapy does not have http support, skipping url mining.
         You can try the following: 
@@ -215,6 +216,12 @@ def urlCount(pkts, limit, headerOne, headerTwo, title):
             if http.HTTPRequest in pkt:
                 uri=(pkt[http.HTTPRequest].Path).decode("utf-8")
                 host=(pkt[http.HTTPRequest].Host).decode("utf-8")
+                if args.resolve:
+                    try:
+                        ipaddress.ip_address(host)
+                        host=resolveName(host) 
+                    except:
+                        pass
                 urls.append(host+uri)
     simpleCount(urls, limit, headerOne, headerTwo, title)
 
