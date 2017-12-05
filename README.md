@@ -18,10 +18,10 @@ It currently supports:
 #Usage
 ----
 
-    [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http2.pcap  --help 
+     [joe@fedora26 packetexaminer]$  ./packetexaminer.py -h 
      usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--bytes] [--dns]
-                              [--url] [--netmap] [--xfiles] [--resolve] [--all]
-                              [--limit LIMIT]
+                              [--url] [--netmap] [--xfiles] [--resolve] [--details]
+                              [--all] [--limit LIMIT]
                               file
      
      PCAP File Examiner
@@ -40,6 +40,7 @@ It currently supports:
        --netmap       Display a network Map
        --xfiles       Extract files from PCAP
        --resolve      Resolve IPs
+       --details      Display aditional details where available
        --all          Display all
        --limit LIMIT  Limit results to X
 
@@ -82,7 +83,7 @@ Show to top 10 DNS queries in the PCAP
 
 Show the top 10 DNS queries with the clients that looked them up:
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../example2.pcap --dns --limit 10 --details 
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../example2.pcap --dns --limit 10 --details 
      +--------------+------------------+
      |    Option    |      Value       |
      +--------------+------------------+
@@ -239,7 +240,7 @@ Show the top 10 URLs in the pcap.
 
 Show the top 5 URLs and the clients who accessed them. 
 
-[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --url  --details --limit 5 | sed 's/^/     /'
+[joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --url  --details --limit 5 
      +--------------+------------------+
      |    Option    |      Value       |
      +--------------+------------------+
