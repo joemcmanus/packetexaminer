@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File    : packetexaminer.py
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.3  12/04/2017 Joe McManus
+# Version : 0.4  12/07/2017 Joe McManus
 # Copyright (C) 2017 Joe McManus
 
 # This program is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@ logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import base64
 from datetime import datetime
 import socket
+import shutil
 
 try: 
     from scapy.all import *
@@ -148,9 +149,9 @@ def simpleCount(ipList, limit, headerOne, headerTwo, title):
     i=0
     for item, count in cnt.most_common(): 
         if args.resolve:
-            table.add_row([resolveName(item),count])
+            table.add_row([formatCell(resolveName(item)),count])
         else:
-            table.add_row([item,count])
+            table.add_row([formatCell(item),count])
         if limit:
             if i >= limit:
                 break
@@ -159,16 +160,26 @@ def simpleCount(ipList, limit, headerOne, headerTwo, title):
     print(table)	
 
 def simpleCountDetails(itemList, itemDict, limit, headerOne, headerTwo, headerThree, title):
+
     table=PrettyTable([headerOne, headerTwo, headerThree])
     cnt = Counter()
     for item in itemList:
         cnt[item] += 1
     i=0
     for item, count in cnt.most_common():
+        items=""
+        #split up the list into a string for pretty printing.
+        j=0
+        for x in itemDict[item]: 
+            if j < len(itemDict[item]):
+                items += x + "\n"
+            else: 
+                items += x
+            j+=1
         if args.resolve:
             table.add_row([formatCell(resolveName(item)),count,itemDict[item]])
         else:
-            table.add_row([formatCell(item),count,itemDict[item]])
+            table.add_row([formatCell(item),count,items])
         if limit:
             if i >= limit:
                 break
@@ -177,10 +188,14 @@ def simpleCountDetails(itemList, itemDict, limit, headerOne, headerTwo, headerTh
     print(table)
 
 def formatCell(x):
+    #make sizeable for screen
+    termWidth=shutil.get_terminal_size().columns
+    #Assume widest column is column1 
+    colWidth= (termWidth // 3)  * 2 
     chunks=""
-    if len(x) > 60:
-        for chunk in [x[i:i+60] for i in range(0, len(x), 60)]:
-            if len(chunk) == 60:
+    if len(x) > colWidth:
+        for chunk in [x[i:i+colWidth] for i in range(0, len(x), colWidth)]:
+            if len(chunk) == colWidth:
                 chunks += chunk + "\n"
             else:
                 chunks += chunk
