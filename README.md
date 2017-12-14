@@ -2,7 +2,6 @@
 ----
 This is a simple harness to perform PCAP analysis. This hopefully automates some routine functions an analyst would do manually. 
 
-Coming in the next day or two is google map integration. 
 
 #Features
 ----
@@ -11,6 +10,10 @@ It currently supports:
  - Bytes between IPS
  - DNS lookups
  - URL mining
+ - Source IP counts
+ - Dest IP Counts
+ - Port Counts
+ - Src/Dst Port Counts
  - Network Maps
  - Really basic file extraction (beta)
 
@@ -18,10 +21,11 @@ It currently supports:
 #Usage
 ----
 
-     [joe@fedora26 packetexaminer]$  ./packetexaminer.py -h 
-     usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--bytes] [--dns]
-                              [--url] [--netmap] [--xfiles] [--resolve] [--details]
-                              [--all] [--limit LIMIT]
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py --help | sed 's/^/     /' 
+     usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--dport] [--sport]
+                              [--ports] [--bytes] [--dns] [--url] [--netmap]
+                              [--xfiles] [--resolve] [--details] [--graphs] [--all]
+                              [--limit LIMIT] [--skipopts]
                               file
      
      PCAP File Examiner
@@ -34,6 +38,9 @@ It currently supports:
        --flows        Display flow summary
        --dst          Display count of destination IPs
        --src          Display count of source IPs
+       --dport        Display count of destination ports
+       --sport        Display count of source ports
+       --ports        Display count of all ports
        --bytes        Display source and destination byte counts
        --dns          Display all DNS Lookups in PCAP
        --url          Display all ULRs in PCAP
@@ -41,8 +48,10 @@ It currently supports:
        --xfiles       Extract files from PCAP
        --resolve      Resolve IPs
        --details      Display aditional details where available
+       --graphs       Display graphs where available
        --all          Display all
        --limit LIMIT  Limit results to X
+       --skipopts     Don't display the options at runtime
 
 
 
@@ -122,7 +131,12 @@ Create a network map from the PCAP file.
      +--------+--------------+
      Reading pcap file
 
-![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/netmap.jpg)
+![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/netmap.jpg)
+
+Graphs can be created by passing the --graphs option 
+
+![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/dnsGraph.jpg)
+![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/srcGraph.jpg)
 
 Show to the 10 SRC/DST Flows
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File    : packetexaminer.py
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.4  12/07/2017 Joe McManus
+# Version : 0.5  12/13/2017 Joe McManus
 # Copyright (C) 2017 Joe McManus
 
 # This program is free software: you can redistribute it and/or modify
@@ -47,6 +47,9 @@ parser.add_argument('file', help="Source PCAP File, i.e. example.pcap", type=str
 parser.add_argument('--flows', help="Display flow summary", action="store_true")
 parser.add_argument('--dst', help="Display count of destination IPs", action="store_true")
 parser.add_argument('--src', help="Display count of source IPs", action="store_true")
+parser.add_argument('--dport', help="Display count of destination ports", action="store_true")
+parser.add_argument('--sport', help="Display count of source ports", action="store_true")
+parser.add_argument('--ports', help="Display count of all ports", action="store_true")
 parser.add_argument('--bytes', help="Display source and destination byte counts", action="store_true")
 parser.add_argument('--dns', help="Display all DNS Lookups in PCAP", action="store_true")
 parser.add_argument('--url', help="Display all ULRs in PCAP", action="store_true")
@@ -54,6 +57,7 @@ parser.add_argument('--netmap', help="Display a network Map", action="store_true
 parser.add_argument('--xfiles', help="Extract files from PCAP", action="store_true")
 parser.add_argument('--resolve', help="Resolve IPs", action="store_true")
 parser.add_argument('--details', help="Display aditional details where available", action="store_true")
+parser.add_argument('--graphs', help="Display graphs where available", action="store_true")
 parser.add_argument('--all', help="Display all", action="store_true")
 parser.add_argument('--limit', help="Limit results to X", type=int)
 parser.add_argument('--skipopts', help="Don't display the options at runtime", action="store_true")
@@ -65,10 +69,13 @@ if args.all:
     args.bytes=True
     args.dst=True
     args.src=True
+    args.sport=True
+    args.dport=True
     args.dns=True
     args.url=True
     args.netmap=True
     args.xfiles=True
+    args.graphs=True
     args.details=True
 
 if args.url or args.xfiles or args.all:
@@ -84,12 +91,21 @@ if args.url or args.xfiles or args.all:
             sudo python3 ./setup.py build install. """)
         args.url=False
 
-if args.netmap:
+if args.netmap or args.graphs:
     try:
         import matplotlib.pyplot as plt
     except:
         print("ERROR: Matplotlib not installed, try pip3 install matplotlib or dnf install python3-matplotlib")
         quit()
+
+if args.graphs:
+    try: 
+        import numpy as np
+    except:
+        print("ERROR: Numpy not installed, try pip3 install numoy") 
+        quit()
+
+if args.netmap:
     try:
         import networkx as nx
     except:
@@ -104,9 +120,13 @@ if not args.skipopts:
     table.add_row(["Flows", args.flows])
     table.add_row(["Dst", args.dst])
     table.add_row(["Src", args.src])
+    table.add_row(["Src Ports", args.sport])
+    table.add_row(["Dst Ports", args.dport])
+    table.add_row(["All Ports", args.ports])
     table.add_row(["DNS", args.dns])
     table.add_row(["URLs", args.url])
     table.add_row(["Netmap", args.netmap])
+    table.add_row(["Graphs", args.graphs])
     table.add_row(["Xtract Files", args.xfiles])
     table.add_row(["Resolve IPs", args.resolve])
     table.add_row(["Details", args.details])
@@ -126,12 +146,19 @@ else:
 srcIP=[]
 dstIP=[]
 srcdst=[]
+sport=[]
+dport=[]
+port=[]
 i=0
 for pkt in pkts:
     if IP in pkt:
         srcIP.append(pkt[IP].src)
         dstIP.append(pkt[IP].dst)
         srcdst.append(pkt[IP].src + ","  + pkt[IP].dst)
+        dport.append((pkt[IP].dport))
+        sport.append((pkt[IP].sport))
+        port.append((pkt[IP].sport))
+        port.append((pkt[IP].dport))
 
 def resolveName(addr):
     try:
@@ -144,29 +171,54 @@ def resolveName(addr):
 def simpleCount(ipList, limit, headerOne, headerTwo, title):
     table= PrettyTable([headerOne, headerTwo])
     cnt = Counter()
+    yData=[]
+    xData=[]
     for ip in ipList:
         cnt[ip] += 1
     i=0
     for item, count in cnt.most_common(): 
+        item=str(item)
         if args.resolve:
             table.add_row([formatCell(resolveName(item)),count])
         else:
             table.add_row([formatCell(item),count])
+        #for the graph
+        yData.append(count)
+        xData.append(item)
+
         if limit:
             if i >= limit:
                 break
         i+=1
     print(title)
     print(table)	
+    if args.graphs: 
+        createGraph(xData, yData, headerOne, headerTwo, title)
+
+def createGraph(xData, yData, xTitle, yTitle, title): 
+    index=np.arange(len(yData))
+
+    #Add values to chart
+    plt.bar(index, yData,  color='r') 
+    plt.xlabel(xTitle)
+    plt.ylabel(yTitle)
+    plt.title(title)
+    plt.xticks(index, xData, rotation=90)
+
+    plt.show()
+
 
 def simpleCountDetails(itemList, itemDict, limit, headerOne, headerTwo, headerThree, title):
-
+    yData=[]
+    xData=[]
     table=PrettyTable([headerOne, headerTwo, headerThree])
     cnt = Counter()
     for item in itemList:
         cnt[item] += 1
     i=0
     for item, count in cnt.most_common():
+        yData.append(count)
+        xData.append(item)
         items=""
         #split up the list into a string for pretty printing.
         j=0
@@ -184,8 +236,11 @@ def simpleCountDetails(itemList, itemDict, limit, headerOne, headerTwo, headerTh
             if i >= limit:
                 break
         i+=1
+
     print(title)
     print(table)
+    if args.graphs:
+        createGraph(xData, yData, headerOne, headerTwo, title)
 
 def formatCell(x):
     #make sizeable for screen
@@ -206,10 +261,14 @@ def formatCell(x):
 def flowCount(ipList, limit):
     table= PrettyTable(["Src", "Dst", "Count"])
     cnt = Counter()
+    yData=[]
+    xData=[]
     for ip in ipList:
         cnt[ip] += 1
     i=0
     for item, count in cnt.most_common(): 
+        yData.append(count)
+        xData.append(item)
         src,dst=item.split(',')
         if args.resolve:
             table.add_row([resolveName(src),resolveName(dst), count])
@@ -222,8 +281,13 @@ def flowCount(ipList, limit):
 
     print("Src IP/Dst IP Counts")
     print(table)	
+    if args.graphs:
+        createGraph(xData, yData, "IPs", "Count", "Flows")
+
 
 def byteCount(pkts, srcdst, limit):
+    yData=[]
+    xData=[]
     srcdstbytes={}
     table= PrettyTable(["Src", "Dst", "Bytes"])
     for pkt in pkts:
@@ -236,6 +300,8 @@ def byteCount(pkts, srcdst, limit):
                 srcdstbytes[srcdst] = pkt[IP].len
     i=0
     for srcdst, bytes in sorted(srcdstbytes.items(), key=operator.itemgetter(1), reverse=True):
+        yData.append(bytes)
+        xData.append(srcdst)
         src,dst=srcdst.split(',')
         if args.resolve:
             table.add_row([resolveName(src),resolveName(dst), bytes])
@@ -247,6 +313,8 @@ def byteCount(pkts, srcdst, limit):
         i+=1
 
     print(table)
+    if args.graphs:
+        createGraph(xData, yData, "IPs", "Bytes", "Src/Dst Byte Count")
 
 def dnsCount(pkts, limit, headerOne, headerTwo, title):
     lookups=[]
@@ -398,6 +466,12 @@ if args.src:
     simpleCount(srcIP, args.limit, "Source IP", "Count", "Source IP Occurence")
 if args.dst:
     simpleCount(dstIP, args.limit, "Dest IP", "Count", "Dest IP Occurence")
+if args.dport: 
+    simpleCount(dport, args.limit, "Dest Port", "Count", "Dest Port Occurence")
+if args.sport: 
+    simpleCount(sport, args.limit, "Source Port", "Count", "Source Port Occurence")
+if args.ports: 
+    simpleCount(port, args.limit, "Port", "Count", "Port Occurence")
 if args.flows:
     flowCount(srcdst, args.limit)
 if args.bytes:
