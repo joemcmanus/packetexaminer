@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File    : packetexaminer.py
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.5  12/13/2017 Joe McManus
+# Version : 0.6  12/14/2017 Joe McManus
 # Copyright (C) 2017 Joe McManus
 
 # This program is free software: you can redistribute it and/or modify
@@ -50,6 +50,7 @@ parser.add_argument('--src', help="Display count of source IPs", action="store_t
 parser.add_argument('--dport', help="Display count of destination ports", action="store_true")
 parser.add_argument('--sport', help="Display count of source ports", action="store_true")
 parser.add_argument('--ports', help="Display count of all ports", action="store_true")
+parser.add_argument('--portbytes', help="Display ports by bytes", action="store_true")
 parser.add_argument('--bytes', help="Display source and destination byte counts", action="store_true")
 parser.add_argument('--dns', help="Display all DNS Lookups in PCAP", action="store_true")
 parser.add_argument('--url', help="Display all ULRs in PCAP", action="store_true")
@@ -71,6 +72,8 @@ if args.all:
     args.src=True
     args.sport=True
     args.dport=True
+    args.ports=True
+    args.portbytes=True
     args.dns=True
     args.url=True
     args.netmap=True
@@ -102,7 +105,7 @@ if args.graphs:
     try: 
         import numpy as np
     except:
-        print("ERROR: Numpy not installed, try pip3 install numoy") 
+        print("ERROR: Numpy not installed, try pip3 install numpy") 
         quit()
 
 if args.netmap:
@@ -152,13 +155,16 @@ port=[]
 i=0
 for pkt in pkts:
     if IP in pkt:
-        srcIP.append(pkt[IP].src)
-        dstIP.append(pkt[IP].dst)
-        srcdst.append(pkt[IP].src + ","  + pkt[IP].dst)
-        dport.append((pkt[IP].dport))
-        sport.append((pkt[IP].sport))
-        port.append((pkt[IP].sport))
-        port.append((pkt[IP].dport))
+        try:
+            srcIP.append(pkt[IP].src)
+            dstIP.append(pkt[IP].dst)
+            srcdst.append(pkt[IP].src + ","  + pkt[IP].dst)
+            dport.append((pkt[IP].dport))
+            sport.append((pkt[IP].sport))
+            port.append((pkt[IP].sport))
+            port.append((pkt[IP].dport))
+        except:
+            pass
 
 def resolveName(addr):
     try:
@@ -207,6 +213,12 @@ def createGraph(xData, yData, xTitle, yTitle, title):
 
     plt.show()
 
+
+def createPieGraph(xData, yData, xTitle, yTitle, title): 
+    plt.pie(yData,labels=xData, autopct='%1.1f%%', startangle=90)
+    plt.title(title)
+    plt.axis('equal')
+    plt.show()
 
 def simpleCountDetails(itemList, itemDict, limit, headerOne, headerTwo, headerThree, title):
     yData=[]
@@ -316,6 +328,36 @@ def byteCount(pkts, srcdst, limit):
     if args.graphs:
         createGraph(xData, yData, "IPs", "Bytes", "Src/Dst Byte Count")
 
+def portBytes(pkts, limit):
+    yData=[]
+    xData=[]
+    portBytes={}
+    table= PrettyTable(["Port", "Bytes"])
+    for pkt in pkts:
+        if IP in pkt:
+            try: 
+                sport=pkt[IP].sport
+                if sport in portBytes:
+                    newBytes=portBytes[sport] + pkt[IP].len
+                    portBytes[sport] = newBytes 
+                else:
+                    portBytes[sport] = pkt[IP].len
+            except:
+                pass
+    i=0
+    for sport, bytes in sorted(portBytes.items(), key=operator.itemgetter(1), reverse=True):
+        yData.append(bytes)
+        xData.append(sport)
+        table.add_row([sport, bytes])
+        if limit:
+            if i >= limit:
+                break
+        i+=1
+
+    print(table)
+    if args.graphs:
+        createPieGraph(xData, yData, "Ports", "Bytes", "Traffic by Port and Bytes")
+
 def dnsCount(pkts, limit, headerOne, headerTwo, title):
     lookups=[]
     queryClients={}
@@ -405,7 +447,7 @@ def extractFiles(pkts):
     if not os.path.exists('pxOutput'):
         os.mkdir('pxOutput')
     else:
-        print('---Dir exists, skipping creation of pxOutput')
+        print('---Dir exists, skipping creation of pxOutput directory')
 
     for pkt in pkts:
         if pkt.haslayer(TCP) and (pkt.dport == 80 or pkt.sport == 80 ):
@@ -484,4 +526,5 @@ if args.netmap:
     netmap(srcdst, args.limit)
 if args.xfiles:
     extractFiles(pkts)
-
+if args.portbytes:
+    portBytes(pkts, args.limit)

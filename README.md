@@ -1,7 +1,8 @@
 # packetexaminer
 ----
-This is a simple harness to perform PCAP analysis. This hopefully automates some routine functions an analyst would do manually. 
+This is a harness to perform PCAP analysis that a security engineer may do during an incident response or when looking at network security. I found myslef using a collection of tools and techniques again and again and thought it would be helpful to create a program that would do this for me. This hopefully automates some routine functions you would do manually.
 
+Questions/Feedback/Feature Requests? Please let me know. 
 
 #Features
 ----
@@ -21,11 +22,11 @@ It currently supports:
 #Usage
 ----
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py --help | sed 's/^/     /' 
+     [joe@fedora26 packetexaminer]$ ./packetexaminer.py --help 
      usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--dport] [--sport]
-                              [--ports] [--bytes] [--dns] [--url] [--netmap]
-                              [--xfiles] [--resolve] [--details] [--graphs] [--all]
-                              [--limit LIMIT] [--skipopts]
+                              [--ports] [--portbytes] [--bytes] [--dns] [--url]
+                              [--netmap] [--xfiles] [--resolve] [--details]
+                              [--graphs] [--all] [--limit LIMIT] [--skipopts]
                               file
      
      PCAP File Examiner
@@ -41,6 +42,7 @@ It currently supports:
        --dport        Display count of destination ports
        --sport        Display count of source ports
        --ports        Display count of all ports
+       --portbytes    Display ports by bytes
        --bytes        Display source and destination byte counts
        --dns          Display all DNS Lookups in PCAP
        --url          Display all ULRs in PCAP
@@ -60,18 +62,6 @@ It currently supports:
 Show the top 10 DNS queries in the PCAP
 
     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --dns --limit 10 
-     +--------+--------------+
-     | Option |    Value     |
-     +--------+--------------+
-     |  File  | ../http.pcap |
-     | Limit  |      10      |
-     | Bytes  |    False     |
-     | Flows  |    False     |
-     |  Dst   |    False     |
-     |  Src   |    False     |
-     |  DNS   |     True     |
-     |  URLs  |    False     |
-     +--------+--------------+
      Reading pcap file
      Unique DNS Lookups
      +----------------------------------+-------+
@@ -136,6 +126,7 @@ Create a network map from the PCAP file.
 Graphs can be created by passing the --graphs option 
 
 ![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/dnsGraph.png)
+![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/byteGraph.png)
 ![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/srcGraph.png)
 
 Show to the 10 SRC/DST Flows
