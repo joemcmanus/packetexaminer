@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # File    : packetexaminer.py
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.6  12/14/2017 Joe McManus
-# Copyright (C) 2017 Joe McManus
+# Version : 0.7  05/22/2018 Joe McManus
+# Copyright (C) 2018 Joe McManus
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ from collections import Counter, defaultdict
 import operator
 import argparse
 import os
+
 #Hide scapy IPv6 message
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
@@ -94,18 +95,12 @@ if args.url or args.xfiles or args.all:
             sudo python3 ./setup.py build install. """)
         args.url=False
 
-if args.netmap or args.graphs:
-    try:
-        import matplotlib.pyplot as plt
-    except:
-        print("ERROR: Matplotlib not installed, try pip3 install matplotlib or dnf install python3-matplotlib")
-        quit()
-
 if args.graphs:
-    try: 
-        import numpy as np
+    try:
+        import plotly
+        import plotly.graph_objs as go
     except:
-        print("ERROR: Numpy not installed, try pip3 install numpy") 
+        print("ERROR: Plotly not installed, try pip3 install plotly") 
         quit()
 
 if args.netmap:
@@ -202,16 +197,8 @@ def simpleCount(ipList, limit, headerOne, headerTwo, title):
         createGraph(xData, yData, headerOne, headerTwo, title)
 
 def createGraph(xData, yData, xTitle, yTitle, title): 
-    index=np.arange(len(yData))
-
-    #Add values to chart
-    plt.bar(index, yData,  color='r') 
-    plt.xlabel(xTitle)
-    plt.ylabel(yTitle)
-    plt.title(title)
-    plt.xticks(index, xData, rotation=90)
-
-    plt.show()
+    data= [ go.Bar( x=xData, y=yData) ]  
+    plotly.offline.plot(data)
 
 
 def createPieGraph(xData, yData, xTitle, yTitle, title): 
