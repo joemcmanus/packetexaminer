@@ -63,6 +63,7 @@ parser.add_argument('--graphs', help="Display graphs where available", action="s
 parser.add_argument('--all', help="Display all", action="store_true")
 parser.add_argument('--limit', help="Limit results to X", type=int)
 parser.add_argument('--skipopts', help="Don't display the options at runtime", action="store_true")
+parser.add_argument('--outdir', help="Output directory for files, default = pwd ", action="store")
 args=parser.parse_args()
 
 if args.all:
@@ -110,6 +111,15 @@ if args.netmap:
         print("ERROR: NetworkX not installed, try pip3 install networkx")
         quit()
 
+if args.outdir:
+    #check to see if output file exists
+    if not os.path.isdir(args.outdir):
+        try:
+            os.mkdir(args.outdir)
+        except:
+            print('ERROR: Unable to create output directory ' + args.outdir)
+            quit()
+
 if not args.skipopts:
     table= PrettyTable(["Option", "Value"])
     table.add_row(["File", args.file])
@@ -128,6 +138,7 @@ if not args.skipopts:
     table.add_row(["Xtract Files", args.xfiles])
     table.add_row(["Resolve IPs", args.resolve])
     table.add_row(["Details", args.details])
+    table.add_row(["Output Dir", args.outdir])
     print(table)
 
 if os.path.isfile(args.file):
@@ -202,6 +213,9 @@ def makeFilename(title):
     #next remove slashes 
     title=title.replace("/","")
     #return the title with .html on the end so we don't get alerts
+    if args.outdir:
+        title=args.outdir + "/" + title
+
     return title + ".html"
     
 def createGraph(xData, yData, xTitle, yTitle, title): 
@@ -209,15 +223,18 @@ def createGraph(xData, yData, xTitle, yTitle, title):
         "data":[ go.Bar( x=xData, y=yData) ], 
         "layout": go.Layout(title=title, 
             xaxis=dict(title=xTitle),
-            yaxis=dict(title=yTitle))
+            yaxis=dict(title=yTitle)
+                ))
         },filename=makeFilename(title))
 
 
 def createPieGraph(xData, yData, xTitle, yTitle, title): 
-    labels=xData
-    values=yData
-    trace=go.Pie(labels=labels, values=values)
-    plotly.offline.plot([trace], filename=makeFilename(title))
+    pie={'data': [ {'labels' : xData, 
+            'values': yData,
+            'type' : 'pie' }],
+            "layout": { 'title' }
+            }
+    plotly.offline.plot(pie, filename=makeFilename(title))
 
 def simpleCountDetails(itemList, itemDict, limit, headerOne, headerTwo, headerThree, title):
     yData=[]
