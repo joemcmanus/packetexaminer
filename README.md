@@ -126,7 +126,7 @@ Create a network map from the PCAP file.
 Graphs can be created by passing the --graphs option 
 
 ![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/dnsGraph.png)
-![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/byteGraph.png)
+![alt_tag](https://raw.githubusercontent.com/joemcmanus/packetexaminer/master/img/ports.png)
 ![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/srcGraph.png)
 
 Show to the 10 SRC/DST Flows
