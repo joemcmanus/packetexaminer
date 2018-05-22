@@ -196,16 +196,28 @@ def simpleCount(ipList, limit, headerOne, headerTwo, title):
     if args.graphs: 
         createGraph(xData, yData, headerOne, headerTwo, title)
 
+def makeFilename(title):
+    #first remove spaces 
+    title=title.replace(" ","-")
+    #next remove slashes 
+    title=title.replace("/","")
+    #return the title with .html on the end so we don't get alerts
+    return title + ".html"
+    
 def createGraph(xData, yData, xTitle, yTitle, title): 
-    data= [ go.Bar( x=xData, y=yData) ]  
-    plotly.offline.plot(data)
+    plotly.offline.plot({ 
+        "data":[ go.Bar( x=xData, y=yData) ], 
+        "layout": go.Layout(title=title, 
+            xaxis=dict(title=xTitle),
+            yaxis=dict(title=yTitle))
+        },filename=makeFilename(title))
 
 
 def createPieGraph(xData, yData, xTitle, yTitle, title): 
-    plt.pie(yData,labels=xData, autopct='%1.1f%%', startangle=90)
-    plt.title(title)
-    plt.axis('equal')
-    plt.show()
+    labels=xData
+    values=yData
+    trace=go.Pie(labels=labels, values=values)
+    plotly.offline.plot([trace], filename=makeFilename(title))
 
 def simpleCountDetails(itemList, itemDict, limit, headerOne, headerTwo, headerThree, title):
     yData=[]
