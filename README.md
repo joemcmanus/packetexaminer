@@ -22,38 +22,40 @@ It currently supports:
 #Usage
 ----
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py --help 
+     [joe@fedora28 packetexaminer]$ ./packetexaminer.py --help 
      usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--dport] [--sport]
-                              [--ports] [--portbytes] [--bytes] [--dns] [--url]
-                              [--netmap] [--xfiles] [--resolve] [--details]
-                              [--graphs] [--all] [--limit LIMIT] [--skipopts]
-                              file
-     
-     PCAP File Examiner
-     
-     positional arguments:
-       file           Source PCAP File, i.e. example.pcap
-     
-     optional arguments:
-       -h, --help     show this help message and exit
-       --flows        Display flow summary
-       --dst          Display count of destination IPs
-       --src          Display count of source IPs
-       --dport        Display count of destination ports
-       --sport        Display count of source ports
-       --ports        Display count of all ports
-       --portbytes    Display ports by bytes
-       --bytes        Display source and destination byte counts
-       --dns          Display all DNS Lookups in PCAP
-       --url          Display all ULRs in PCAP
-       --netmap       Display a network Map
-       --xfiles       Extract files from PCAP
-       --resolve      Resolve IPs
-       --details      Display aditional details where available
-       --graphs       Display graphs where available
-       --all          Display all
-       --limit LIMIT  Limit results to X
-       --skipopts     Don't display the options at runtime
+                             [--ports] [--portbytes] [--bytes] [--dns] [--url]
+                             [--netmap] [--xfiles] [--resolve] [--details]
+                             [--graphs] [--all] [--limit LIMIT] [--skipopts]
+                             [--outdir OUTDIR]
+                             file
+    
+    PCAP File Examiner
+    
+    positional arguments:
+      file             Source PCAP File, i.e. example.pcap
+    
+    optional arguments:
+      -h, --help       show this help message and exit
+      --flows          Display flow summary
+      --dst            Display count of destination IPs
+      --src            Display count of source IPs
+      --dport          Display count of destination ports
+      --sport          Display count of source ports
+      --ports          Display count of all ports
+      --portbytes      Display ports by bytes
+      --bytes          Display source and destination byte counts
+      --dns            Display all DNS Lookups in PCAP
+      --url            Display all ULRs in PCAP
+      --netmap         Display a network Map
+      --xfiles         Extract files from PCAP
+      --resolve        Resolve IPs
+      --details        Display aditional details where available
+      --graphs         Display graphs where available
+      --all            Display all
+      --limit LIMIT    Limit results to X
+      --skipopts       Don't display the options at runtime
+      --outdir OUTDIR  Output directory for files, default = pwd
 
 
 
@@ -61,7 +63,7 @@ It currently supports:
 ----
 Show the top 10 DNS queries in the PCAP
 
-    [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --dns --limit 10 
+    [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../http.pcap --dns --limit 10 
      Reading pcap file
      Unique DNS Lookups
      +----------------------------------+-------+
@@ -82,7 +84,7 @@ Show the top 10 DNS queries in the PCAP
 
 Show the top 10 DNS queries with the clients that looked them up:
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --dns  --details --limit 10 --skipopts 
+     [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --dns  --details --limit 10 --skipopts 
      --Reading pcap file
      Unique DNS Lookups
      +--------------------------------------------------------------+-------+----------------------------------------------------+
@@ -105,7 +107,7 @@ Show the top 10 DNS queries with the clients that looked them up:
 
 Create a network map from the PCAP file.
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --limit 50 --netmap 
+     [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../http.pcap --limit 50 --netmap 
      +--------+--------------+
      | Option |    Value     |
      +--------+--------------+
@@ -131,7 +133,7 @@ Graphs can be created by passing the --graphs option
 
 Show to the 10 SRC/DST Flows
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --flows --limit 10 
+     [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../http.pcap --flows --limit 10 
      +--------+--------------+
      | Option |    Value     |
      +--------+--------------+
@@ -164,7 +166,7 @@ Show to the 10 SRC/DST Flows
 
 Show to top 10 SRC/DST by bytes
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --bytes --limit 10 
+     [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../http.pcap --bytes --limit 10 
      +--------+--------------+
      | Option |    Value     |
      +--------+--------------+
@@ -196,7 +198,7 @@ Show to top 10 SRC/DST by bytes
 
 Show the top 10 URLs in the pcap. 
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../http.pcap --url --limit 10 
+     [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../http.pcap --url --limit 10 
      +--------+--------------+
      | Option |    Value     |
      +--------+--------------+
@@ -230,7 +232,7 @@ Show the top 10 URLs in the pcap.
 
 Show the top 5 URLs and the clients who accessed them. 
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --url  --details --limit 5 
+     [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --url  --details --limit 5 
      +--------------+------------------+
      |    Option    |      Value       |
      +--------------+------------------+
@@ -265,7 +267,7 @@ Show the top 5 URLs and the clients who accessed them.
      |             w.usabilla.com/0649ef72a7be.js?lv=1              |   2   |         ['192.168.1.105', '192.168.1.19']          |
      | us-u.openx.net/w/1.0/cm?id=e818ca1e-0c23-caa8-0dd3-096b0ada0 |   2   |                 ['192.168.1.105']                  |
      | 8b7&ph=2d1251ae-7f3a-47cf-bd2a-2f288854a0ba&plm=5&r=http%3A% |       |                                                    |
-     |  2F%2Fs.amazon-adsystem.com%2Fecm3%3Fex%3Dopenx.com%26id%3D  |       |                                                    |
+     |  2F%2Fs.amazon-adsystem.com%2Fecm3%3Fex%3Dopenx.com%28%3D  |       |                                                    |
      | fastlane.rubiconproject.com/a/api/fastlane.json?account_id=1 |   2   |                 ['192.168.1.105']                  |
      | 1078&size_id=15&p_pos=btf&rp_floor=0.01&rf=http%3A%2F%2Fwww. |       |                                                    |
      | cnn.com%2Fvideos%2Fpolitics%2F2017%2F12%2F04%2Fspeier-reacti |       |                                                    |
@@ -285,7 +287,7 @@ Show the top 5 URLs and the clients who accessed them.
 
 Show the top 10 hosts in the PCAP by bytes and reolve the IP.
 
-     [joe@fedora26 packetexaminer]$ ./packetexaminer.py --bytes --resolve --limit 10 ../http.pcap 
+     [joe@fedora28 packetexaminer]$ ./packetexaminer.py --bytes --resolve --limit 10 ../http.pcap 
      +--------------+--------------+
      |    Option    |    Value     |
      +--------------+--------------+

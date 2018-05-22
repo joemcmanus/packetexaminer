@@ -223,8 +223,7 @@ def createGraph(xData, yData, xTitle, yTitle, title):
         "data":[ go.Bar( x=xData, y=yData) ], 
         "layout": go.Layout(title=title, 
             xaxis=dict(title=xTitle),
-            yaxis=dict(title=yTitle)
-                ))
+            yaxis=dict(title=yTitle))
         },filename=makeFilename(title))
 
 
