@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File    : packetexaminer.py
 # Author  : Joe McManus josephmc@alumni.cmu.edu
-# Version : 0.8  05/22/2018 Joe McManus
+# Version : 0.9  06/06/2018 Joe McManus
 # Copyright (C) 2018 Joe McManus
 
 # This program is free software: you can redistribute it and/or modify
@@ -60,6 +60,7 @@ parser.add_argument('--xfiles', help="Extract files from PCAP", action="store_tr
 parser.add_argument('--resolve', help="Resolve IPs", action="store_true")
 parser.add_argument('--details', help="Display aditional details where available", action="store_true")
 parser.add_argument('--graphs', help="Display graphs where available", action="store_true")
+parser.add_argument('--timeseries', help="Display data over time", action="store_true")
 parser.add_argument('--all', help="Display all", action="store_true")
 parser.add_argument('--limit', help="Limit results to X", type=int)
 parser.add_argument('--skipopts', help="Don't display the options at runtime", action="store_true")
@@ -82,6 +83,7 @@ if args.all:
     args.xfiles=True
     args.graphs=True
     args.details=True
+    args.timeseries=True
 
 if args.url or args.xfiles or args.all:
     try:
@@ -109,6 +111,12 @@ if args.netmap:
         import networkx as nx
     except:
         print("ERROR: NetworkX not installed, try pip3 install networkx")
+        quit()
+if args.timeseries:
+    try:
+        import pandas as pd
+    except:
+        print("ERROR: Pandas not installed, try pip3 install pandas")
         quit()
 
 if args.outdir:
@@ -138,6 +146,7 @@ if not args.skipopts:
     table.add_row(["Xtract Files", args.xfiles])
     table.add_row(["Resolve IPs", args.resolve])
     table.add_row(["Details", args.details])
+    table.add_row(["Time Series", args.timeseries])
     table.add_row(["Output Dir", args.outdir])
     print(table)
 
@@ -519,6 +528,38 @@ def writePktFile(pkt, contentType, pktContent):
     fh.write(pktContent)
     fh.close()
 
+def timeSeries(pkts, title, xTitle, yTitle):
+    pktBytes=[]
+    pktTimes=[]
+
+    #Read each packet and append to the lists. 
+    for pkt in pkts:
+        if IP in pkt: 
+            try:
+                pktBytes.append(pkt[IP].len)
+                #First we need to covert Epoch time to a datetime 
+                pktTime=datetime.fromtimestamp(pkt.time)
+                #Then convert to a format we like
+                pktTimes.append(pktTime.strftime("%Y-%m-%d %H:%M:%S.%f"))
+            except:
+                pass
+
+    bytes = pd.Series(pktBytes).astype(int)
+    times = pd.to_datetime(pd.Series(pktTimes).astype(str),  errors='coerce')
+    df  = pd.DataFrame({"Bytes": bytes, "Times":times})
+    df = df.set_index('Times')
+    df2=df.resample('2S').sum()
+
+    table= PrettyTable(["Time", "Bytes"])
+    for row in df2.iterrows():
+        table.add_row([row[0], row[1]['Bytes']])
+    print(table)
+
+    if args.graphs:
+        plotly.offline.plot({
+            "data":[plotly.graph_objs.Scatter(x=df2.index, y=df2['Bytes'])],
+            "layout":plotly.graph_objs.Layout(title=title, xaxis=dict(title=xTitle), yaxis=dict(title=yTitle))}, filename=makeFilename(title))
+
 if args.src:
     simpleCount(srcIP, args.limit, "Source IP", "Count", "Source IP Occurence")
 if args.dst:
@@ -543,3 +584,5 @@ if args.xfiles:
     extractFiles(pkts)
 if args.portbytes:
     portBytes(pkts, args.limit)
+if args.timeseries:
+    timeSeries(pkts, "Traffic over Time", "Date", "Bytes" )

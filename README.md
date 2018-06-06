@@ -22,40 +22,40 @@ It currently supports:
 #Usage
 ----
 
-     [joe@fedora28 packetexaminer]$ ./packetexaminer.py --help 
-     usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--dport] [--sport]
-                             [--ports] [--portbytes] [--bytes] [--dns] [--url]
-                             [--netmap] [--xfiles] [--resolve] [--details]
-                             [--graphs] [--all] [--limit LIMIT] [--skipopts]
-                             [--outdir OUTDIR]
-                             file
-    
-    PCAP File Examiner
-    
-    positional arguments:
-      file             Source PCAP File, i.e. example.pcap
-    
-    optional arguments:
-      -h, --help       show this help message and exit
-      --flows          Display flow summary
-      --dst            Display count of destination IPs
-      --src            Display count of source IPs
-      --dport          Display count of destination ports
-      --sport          Display count of source ports
-      --ports          Display count of all ports
-      --portbytes      Display ports by bytes
-      --bytes          Display source and destination byte counts
-      --dns            Display all DNS Lookups in PCAP
-      --url            Display all ULRs in PCAP
-      --netmap         Display a network Map
-      --xfiles         Extract files from PCAP
-      --resolve        Resolve IPs
-      --details        Display aditional details where available
-      --graphs         Display graphs where available
-      --all            Display all
-      --limit LIMIT    Limit results to X
-      --skipopts       Don't display the options at runtime
-      --outdir OUTDIR  Output directory for files, default = pwd
+    usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--dport] [--sport]
+                            [--ports] [--portbytes] [--bytes] [--dns] [--url]
+                            [--netmap] [--xfiles] [--resolve] [--details]
+                            [--graphs] [--timeseries] [--all] [--limit LIMIT]
+                            [--skipopts] [--outdir OUTDIR]
+                            file
+   
+   PCAP File Examiner
+   
+   positional arguments:
+     file             Source PCAP File, i.e. example.pcap
+   
+   optional arguments:
+     -h, --help       show this help message and exit
+     --flows          Display flow summary
+     --dst            Display count of destination IPs
+     --src            Display count of source IPs
+     --dport          Display count of destination ports
+     --sport          Display count of source ports
+     --ports          Display count of all ports
+     --portbytes      Display ports by bytes
+     --bytes          Display source and destination byte counts
+     --dns            Display all DNS Lookups in PCAP
+     --url            Display all ULRs in PCAP
+     --netmap         Display a network Map
+     --xfiles         Extract files from PCAP
+     --resolve        Resolve IPs
+     --details        Display aditional details where available
+     --graphs         Display graphs where available
+     --timeseries     Display data over time
+     --all            Display all
+     --limit LIMIT    Limit results to X
+     --skipopts       Don't display the options at runtime
+     --outdir OUTDIR  Output directory for files, default = pwd
 
 
 
@@ -108,19 +108,6 @@ Show the top 10 DNS queries with the clients that looked them up:
 Create a network map from the PCAP file.
 
      [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../http.pcap --limit 50 --netmap 
-     +--------+--------------+
-     | Option |    Value     |
-     +--------+--------------+
-     |  File  | ../http.pcap |
-     | Limit  |      50      |
-     | Bytes  |    False     |
-     | Flows  |    False     |
-     |  Dst   |    False     |
-     |  Src   |    False     |
-     |  DNS   |    False     |
-     |  URLs  |    False     |
-     | Netmap |     True     |
-     +--------+--------------+
      Reading pcap file
 
 ![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/netmap.jpg)
@@ -130,22 +117,11 @@ Graphs can be created by passing the --graphs option
 ![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/dnsGraph.png)
 ![alt_tag](https://raw.githubusercontent.com/joemcmanus/packetexaminer/master/img/ports.png)
 ![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/srcGraph.png)
+![alt_tag](https://github.com/joemcmanus/packetexaminer/blob/master/img/timeseries.png)
 
 Show to the 10 SRC/DST Flows
 
      [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../http.pcap --flows --limit 10 
-     +--------+--------------+
-     | Option |    Value     |
-     +--------+--------------+
-     |  File  | ../http.pcap |
-     | Limit  |      10      |
-     | Bytes  |    False     |
-     | Flows  |     True     |
-     |  Dst   |    False     |
-     |  Src   |    False     |
-     |  DNS   |    False     |
-     |  URLs  |    False     |
-     +--------+--------------+
      Reading pcap file
      Src IP/Dst IP Counts
      +----------------+----------------+-------+
@@ -167,18 +143,6 @@ Show to the 10 SRC/DST Flows
 Show to top 10 SRC/DST by bytes
 
      [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../http.pcap --bytes --limit 10 
-     +--------+--------------+
-     | Option |    Value     |
-     +--------+--------------+
-     |  File  | ../http.pcap |
-     | Limit  |      10      |
-     | Bytes  |     True     |
-     | Flows  |    False     |
-     |  Dst   |    False     |
-     |  Src   |    False     |
-     |  DNS   |    False     |
-     |  URLs  |    False     |
-     +--------+--------------+
      Reading pcap file
      +----------------+----------------+--------+
      |      Src       |      Dst       | Bytes  |
@@ -199,18 +163,6 @@ Show to top 10 SRC/DST by bytes
 Show the top 10 URLs in the pcap. 
 
      [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../http.pcap --url --limit 10 
-     +--------+--------------+
-     | Option |    Value     |
-     +--------+--------------+
-     |  File  | ../http.pcap |
-     | Limit  |      10      |
-     | Bytes  |    False     |
-     | Flows  |    False     |
-     |  Dst   |    False     |
-     |  Src   |    False     |
-     |  DNS   |    False     |
-     |  URLs  |     True     |
-     +--------+--------------+
      Reading pcap file
      Unique URLs
      +------------------------------------------------------------+-------+
@@ -233,22 +185,6 @@ Show the top 10 URLs in the pcap.
 Show the top 5 URLs and the clients who accessed them. 
 
      [joe@fedora28 packetexaminer]$ ./packetexaminer.py ../multiurl.pcap --url  --details --limit 5 
-     +--------------+------------------+
-     |    Option    |      Value       |
-     +--------------+------------------+
-     |     File     | ../multiurl.pcap |
-     |    Limit     |        5         |
-     |    Bytes     |      False       |
-     |    Flows     |      False       |
-     |     Dst      |      False       |
-     |     Src      |      False       |
-     |     DNS      |      False       |
-     |     URLs     |       True       |
-     |    Netmap    |      False       |
-     | Xtract Files |      False       |
-     | Resolve IPs  |      False       |
-     |   Details    |       True       |
-     +--------------+------------------+
      --Reading pcap file
      Unique URLs
      +--------------------------------------------------------------+-------+----------------------------------------------------+
@@ -288,21 +224,6 @@ Show the top 5 URLs and the clients who accessed them.
 Show the top 10 hosts in the PCAP by bytes and reolve the IP.
 
      [joe@fedora28 packetexaminer]$ ./packetexaminer.py --bytes --resolve --limit 10 ../http.pcap 
-     +--------------+--------------+
-     |    Option    |    Value     |
-     +--------------+--------------+
-     |     File     | ../http.pcap |
-     |    Limit     |      10      |
-     |    Bytes     |     True     |
-     |    Flows     |    False     |
-     |     Dst      |    False     |
-     |     Src      |    False     |
-     |     DNS      |    False     |
-     |     URLs     |    False     |
-     |    Netmap    |    False     |
-     | Xtract Files |    False     |
-     | Resolve IPs  |     True     |
-     +--------------+--------------+
      --Reading pcap file
      +------------------------------------------------------+------------------------------------------------------+--------+
      |                         Src                          |                         Dst                          | Bytes  |
@@ -319,4 +240,27 @@ Show the top 10 hosts in the PCAP by bytes and reolve the IP.
      |                    151.101.64.175                    |                    192.168.1.107                     | 124329 |
      | a23-217-103-184.deploy.static.akamaitechnologies.com |                    192.168.1.107                     | 115715 |
      +------------------------------------------------------+------------------------------------------------------+--------+
+
+Display packets over time. 
+
+    ./packetexaminer.py --timeseries  ../example.pcap --skipopts 
+    --Reading pcap file
+    +---------------------+---------+
+    |         Time        |  Bytes  |
+    +---------------------+---------+
+    | 2018-05-22 14:22:24 |   874   |
+    | 2018-05-22 14:22:26 |  11941  |
+    | 2018-05-22 14:22:28 |  59670  |
+    | 2018-05-22 14:22:30 |  63916  |
+    | 2018-05-22 14:22:32 |  120133 |
+    | 2018-05-22 14:22:34 |  16384  |
+    | 2018-05-22 14:22:36 |  337209 |
+    | 2018-05-22 14:22:38 |  37100  |
+    | 2018-05-22 14:22:40 |  50255  |
+    | 2018-05-22 14:22:42 |  784837 |
+    | 2018-05-22 14:22:44 |  577396 |
+    | 2018-05-22 14:22:46 | 1079281 |
+    | 2018-05-22 14:22:48 |  691862 |
+    | 2018-05-22 14:22:50 |  21759  |
+    +---------------------+---------+
 
