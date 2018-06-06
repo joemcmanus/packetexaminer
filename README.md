@@ -4,9 +4,10 @@ This is a harness to perform PCAP analysis that a security engineer may do durin
 
 Questions/Feedback/Feature Requests? Please let me know. 
 
-#Features
+# Features
 ----
 It currently supports:
+ - Time Series of pcap data
  - Counts of IPs
  - Bytes between IPS
  - DNS lookups
@@ -19,7 +20,7 @@ It currently supports:
  - Really basic file extraction (beta)
 
 
-#Usage
+# Usage
 ----
 
     usage: packetexaminer.py [-h] [--flows] [--dst] [--src] [--dport] [--sport]
@@ -59,7 +60,7 @@ It currently supports:
 
 
 
-#Examples
+# Examples
 ----
 Show the top 10 DNS queries in the PCAP
 
