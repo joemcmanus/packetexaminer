@@ -30,12 +30,12 @@ It currently supports:
                             [--skipopts] [--outdir OUTDIR]
                             file
    
-   PCAP File Examiner
+    PCAP File Examiner
    
-   positional arguments:
-     file             Source PCAP File, i.e. example.pcap
+    positional arguments:
+      file             Source PCAP File, i.e. example.pcap
    
-   optional arguments:
+    optional arguments:
      -h, --help       show this help message and exit
      --flows          Display flow summary
      --dst            Display count of destination IPs
