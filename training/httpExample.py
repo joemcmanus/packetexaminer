@@ -1,4 +1,5 @@
 from scapy.all import *
+from scapy_http import http
 
 packets = rdpcap("example.pcap")
 
