@@ -19,7 +19,7 @@
 
 from scapy.all import *
 from prettytable import PrettyTable
-from collections import Counter, defaultdict
+from collections import Counter
 
 packets = rdpcap("example.pcap")
 

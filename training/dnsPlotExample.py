@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from scapy.all import *
-from collections import Counter, defaultdict
+from collections import Counter
 import plotly
 
 packets = rdpcap("example.pcap")
