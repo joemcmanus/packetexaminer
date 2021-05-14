@@ -217,12 +217,10 @@ def simpleCount(ipList, limit, headerOne, headerTwo, title):
         createGraph(xData, yData, headerOne, headerTwo, title)
 
 def makeFilename(title):
-    print("got here")
     #first remove spaces 
     title=title.replace(" ","-")
     #next remove slashes 
     title=title.replace("/","") 
-    print(title)
     #return the title with .html on the end so we don't get alerts
     if args.outdir:
         title=args.outdir + "/" + title
@@ -237,10 +235,9 @@ def createGraph(xData, yData, xTitle, yTitle, title):
             yaxis=dict(title=yTitle))
         },filename=makeFilename(title))
 
-
 def createPieGraph(xData, yData, xTitle, yTitle, title): 
     pie={'data': [ {'labels' : xData, 
-            'values': yData,
+            'values': yData, 'title' : title,
             'type' : 'pie' }]
             }
     plotly.offline.plot(pie, filename=makeFilename(title))
