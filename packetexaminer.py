@@ -33,7 +33,7 @@ import shutil
 try: 
     from scapy.all import *
 except:
-    print("ERROR: Sorry, could not import scapy. Try 'pip3 install scapy-python3'.")
+    print("ERROR: Sorry, could not import scapy. Try 'pip3 install scapy'.")
     quit()
 
 try: 
@@ -217,10 +217,12 @@ def simpleCount(ipList, limit, headerOne, headerTwo, title):
         createGraph(xData, yData, headerOne, headerTwo, title)
 
 def makeFilename(title):
+    print("got here")
     #first remove spaces 
     title=title.replace(" ","-")
     #next remove slashes 
-    title=title.replace("/","")
+    title=title.replace("/","") 
+    print(title)
     #return the title with .html on the end so we don't get alerts
     if args.outdir:
         title=args.outdir + "/" + title
@@ -228,9 +230,9 @@ def makeFilename(title):
     return title + ".html"
     
 def createGraph(xData, yData, xTitle, yTitle, title): 
-    plotly.offline.plot({ 
+    plotly.offline.plot({
         "data":[ go.Bar( x=xData, y=yData) ], 
-        "layout": go.Layout(title=title, 
+        "layout": go.Layout(title=title,
             xaxis=dict(title=xTitle),
             yaxis=dict(title=yTitle))
         },filename=makeFilename(title))
@@ -239,8 +241,7 @@ def createGraph(xData, yData, xTitle, yTitle, title):
 def createPieGraph(xData, yData, xTitle, yTitle, title): 
     pie={'data': [ {'labels' : xData, 
             'values': yData,
-            'type' : 'pie' }],
-            "layout": { 'title' }
+            'type' : 'pie' }]
             }
     plotly.offline.plot(pie, filename=makeFilename(title))
 
